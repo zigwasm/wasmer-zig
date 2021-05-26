@@ -7,7 +7,10 @@ Zig bindings for the [Wasmer] WebAssembly runtime.
 ## Disclaimer
 
 This is a work-in-progress library so things will change without notice! Furthermore, building
-this library and examples requires the latest nightly version of Zig `0.8.0`.
+this library and examples requires the latest nightly version of Zig `0.8.0`, and [`gyro`] package
+manager.
+
+[`gyro`]: https://github.com/mattnite/gyro
 
 ## Building
 
@@ -20,13 +23,13 @@ you have `wasmer` binary installed and in your `PATH`.
 To build this library, simply run
 
 ```
-zig build
+gyro build
 ```
 
 Tests can be invoked as follows
 
 ```
-zig build test
+gyro build test
 ```
 
 ## Running examples
@@ -35,11 +38,11 @@ You can find a few examples of how this library can be used to embed Wasmer in y
 instantiate Wasm modules in the `examples/` dir. You can run any example with
 
 ```
-zig build run <example>
+gyro build run -Dexample=<example>
 ```
 
-In particular, you will find there `examples/simple.zig` which is a Zig port of Wasmer's official
-[C tutorial].
+In particular, you will find there `examples/instance.zig` which is a Zig port of Wasmer's [instance.c]
+example.
 
-[C tutorial]: https://wasmerio.github.io/wasmer/c/
+[instance.c]: https://github.com/wasmerio/wasmer/blob/master/lib/c-api/examples/instance.c
 
