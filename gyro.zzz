@@ -1,0 +1,14 @@
+pkgs:
+  wasmer:
+    version: 0.0.0
+    root: src/main.zig
+    description: Zig bindings for the Wasmer WebAssembly runtime
+    license: MIT
+    source_url: "https://github.com/kubkon/wasmer-zig"
+deps:
+  wasm:
+    src:
+      github:
+        user: kubkon
+        repo: wasm-zig
+        ref: main
