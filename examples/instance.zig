@@ -42,7 +42,7 @@ pub fn main() !void {
 
     std.log.info("retrieving exports...", .{});
 
-    const add_one = instance.getExportFunc("add_one") orelse {
+    const add_one = instance.getExportFunc(module, "add_one") orelse {
         std.log.err("failed to retrieve \"add_one\" export from instance", .{});
         return error.ExportNotFound;
     };
