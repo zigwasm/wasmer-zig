@@ -31,10 +31,11 @@ pub fn build(b: *std.build.Builder) !void {
     var main_tests = b.addTest("src/main.zig");
     main_tests.setBuildMode(mode);
     main_tests.addPackage(pkgs.wasm);
-    main_tests.linkSystemLibrary("wasmer");
     if (wasmer_lib_dir) |lib_dir| {
+        main_tests.addRPath(lib_dir);
         main_tests.addLibPath(lib_dir);
     }
+    main_tests.linkSystemLibrary("wasmer");
     main_tests.linkLibC();
 
     const test_step = b.step("test", "Run library tests");
@@ -52,13 +53,14 @@ pub fn build(b: *std.build.Builder) !void {
     executable.setBuildMode(mode);
     executable.addPackage(.{
         .name = "wasmer",
-        .path = "src/main.zig",
+        .path = .{.path = "src/main.zig"},
         .dependencies = &.{pkgs.wasm},
     });
-    executable.linkSystemLibrary("wasmer");
     if (wasmer_lib_dir) |lib_dir| {
+        executable.addRPath(lib_dir);
         executable.addLibPath(lib_dir);
     }
+    executable.linkSystemLibrary("wasmer");
     executable.linkLibC();
     executable.step.dependOn(b.getInstallStep());
 

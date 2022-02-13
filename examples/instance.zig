@@ -3,12 +3,12 @@ const wasmer = @import("wasmer");
 const assert = std.debug.assert;
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-const allocator = &gpa.allocator;
+const allocator = gpa.allocator();
 
 const wat =
     \\(module
     \\  (type $add_one_t (func (param i32) (result i32)))
-    \\  (func $add_ont_f (type $add_one_t) (param $value i32) (result i32)
+    \\  (func $add_one_f (type $add_one_t) (param $value i32) (result i32)
     \\    local.get $value
     \\    i32.const 1
     \\    i32.add)
@@ -16,11 +16,18 @@ const wat =
 ;
 
 pub fn main() !void {
-    var wat_bytes = wasmer.ByteVec.fromSlice(wat);
-    defer wat_bytes.deinit();
+    run () catch |err| {
+        const err_msg = try wasmer.lastError(std.heap.c_allocator);
+        defer std.heap.c_allocator.free(err_msg);
 
-    var wasm_bytes: wasmer.ByteVec = undefined;
-    wasmer.wat2wasm(&wat_bytes, &wasm_bytes);
+        std.log.err("{s}", .{err_msg});
+
+        return err;
+    };
+}
+
+fn run() !void {
+    var wasm_bytes = try wasmer.watToWasm(wat);
     defer wasm_bytes.deinit();
 
     std.log.info("creating the store...", .{});
@@ -33,6 +40,7 @@ pub fn main() !void {
     std.log.info("compiling module...", .{});
 
     const module = try wasmer.Module.init(store, wasm_bytes.toSlice());
+
     defer module.deinit();
 
     std.log.info("instantiating module...", .{});

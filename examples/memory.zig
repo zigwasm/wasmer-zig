@@ -3,7 +3,7 @@ const wasmer = @import("wasmer");
 const assert = std.debug.assert;
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-const allocator = &gpa.allocator;
+const allocator = gpa.allocator();
 
 const wat =
     \\(module
@@ -17,18 +17,25 @@ const wat =
     \\     (i32.store (local.get $idx) (local.get $val)))
     \\   (func $mem_size (type $mem_size_t) (result i32)
     \\     (memory.size))
-    \\   (export \"get_at\" (func $get_at))
-    \\   (export \"set_at\" (func $set_at))
-    \\   (export \"mem_size\" (func $mem_size))
-    \\   (export \"memory\" (memory $mem))
+    \\   (export "get_at" (func $get_at))
+    \\   (export "set_at" (func $set_at))
+    \\   (export "mem_size" (func $mem_size))
+    \\   (export "memory" (memory $mem)))
 ;
 
 pub fn main() !void {
-    var wat_bytes = wasmer.ByteVec.fromSlice(wat);
-    defer wat_bytes.deinit();
+    run () catch |err| {
+        const err_msg = try wasmer.lastError(std.heap.c_allocator);
+        defer std.heap.c_allocator.free(err_msg);
 
-    var wasm_bytes: wasmer.ByteVec = undefined;
-    wasmer.wat2wasm(&wat_bytes, &wasm_bytes);
+        std.log.err("{s}", .{err_msg});
+
+        return err;
+    };
+}
+
+pub fn run() !void {
+    var wasm_bytes = try wasmer.watToWasm(wat);
     defer wasm_bytes.deinit();
 
     std.log.info("creating the store...", .{});
@@ -72,16 +79,14 @@ pub fn main() !void {
     };
     defer memory.deinit();
 
-    const pages = memory.pages();
-    const data_size = memory.size();
-
     memory.grow(2) catch |err| {
         std.log.err("Error growing memory!", .{});
         return err;
     };
 
     const new_pages = memory.pages();
-    std.log.info("New memory size (pages): {d}", .{new_pages});
+    const new_size = memory.size();
+    std.log.info("New memory size (byted)/(pages): {d}/{d}", .{new_size, new_pages});
 
     const mem_addr: i32 = 0x2220;
     const val: i32 = 0xFEFEFFE;
