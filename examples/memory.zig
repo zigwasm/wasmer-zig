@@ -17,10 +17,10 @@ const wat =
     \\     (i32.store (local.get $idx) (local.get $val)))
     \\   (func $mem_size (type $mem_size_t) (result i32)
     \\     (memory.size))
-    \\   (export \"get_at\" (func $get_at))
-    \\   (export \"set_at\" (func $set_at))
-    \\   (export \"mem_size\" (func $mem_size))
-    \\   (export \"memory\" (memory $mem))
+    \\   (export "get_at" (func $get_at))
+    \\   (export "set_at" (func $set_at))
+    \\   (export "mem_size" (func $mem_size))
+    \\   (export "memory" (memory $mem)))
 ;
 
 pub fn main() !void {
