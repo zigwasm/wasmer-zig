@@ -3,7 +3,7 @@ const wasmer = @import("wasmer");
 const assert = std.debug.assert;
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-const allocator = &gpa.allocator;
+const allocator = gpa.allocator();
 
 const wat =
     \\(module

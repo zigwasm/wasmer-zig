@@ -3,7 +3,7 @@ const wasmer = @import("wasmer");
 const assert = std.debug.assert;
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-const allocator = &gpa.allocator;
+const allocator = gpa.allocator();
 
 const wat =
     \\(module
@@ -72,8 +72,8 @@ pub fn main() !void {
     };
     defer memory.deinit();
 
-    const pages = memory.pages();
-    const data_size = memory.size();
+    //const pages = memory.pages();
+    //const data_size = memory.size();
 
     memory.grow(2) catch |err| {
         std.log.err("Error growing memory!", .{});
