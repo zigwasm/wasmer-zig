@@ -24,11 +24,18 @@ const wat =
 ;
 
 pub fn main() !void {
-    var wat_bytes = wasmer.ByteVec.fromSlice(wat);
-    defer wat_bytes.deinit();
+    run () catch |err| {
+        const err_msg = try wasmer.lastError(std.heap.c_allocator);
+        defer std.heap.c_allocator.free(err_msg);
 
-    var wasm_bytes: wasmer.ByteVec = undefined;
-    wasmer.wat2wasm(&wat_bytes, &wasm_bytes);
+        std.debug.print("ERROR: {s}", .{err_msg});
+
+        return err;
+    };
+}
+
+pub fn run() !void {
+    var wasm_bytes = try wasmer.watToWasm(wat);
     defer wasm_bytes.deinit();
 
     std.log.info("creating the store...", .{});
