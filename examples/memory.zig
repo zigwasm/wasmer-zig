@@ -28,7 +28,7 @@ pub fn main() !void {
         const err_msg = try wasmer.lastError(std.heap.c_allocator);
         defer std.heap.c_allocator.free(err_msg);
 
-        std.debug.print("ERROR: {s}", .{err_msg});
+        std.log.err("{s}", .{err_msg});
 
         return err;
     };
@@ -79,16 +79,14 @@ pub fn run() !void {
     };
     defer memory.deinit();
 
-    //const pages = memory.pages();
-    //const data_size = memory.size();
-
     memory.grow(2) catch |err| {
         std.log.err("Error growing memory!", .{});
         return err;
     };
 
     const new_pages = memory.pages();
-    std.log.info("New memory size (pages): {d}", .{new_pages});
+    const new_size = memory.size();
+    std.log.info("New memory size (byted)/(pages): {d}/{d}", .{new_size, new_pages});
 
     const mem_addr: i32 = 0x2220;
     const val: i32 = 0xFEFEFFE;

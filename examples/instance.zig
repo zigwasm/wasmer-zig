@@ -20,7 +20,7 @@ pub fn main() !void {
         const err_msg = try wasmer.lastError(std.heap.c_allocator);
         defer std.heap.c_allocator.free(err_msg);
 
-        std.debug.print("ERROR: {s}", .{err_msg});
+        std.log.err("{s}", .{err_msg});
 
         return err;
     };
